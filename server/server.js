@@ -1,6 +1,8 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from 'express';
 const PORT = process.env.PORT || 5000;
-import 'dotenv/config';
 import cors from 'cors';
 import http from "http";
 import { connectDB } from './lib/db.js';
@@ -19,16 +21,16 @@ export const io = new Server(server, {
 export const userSocketMap = {}; //{userid: socketId}
 
 // Socket.io connection handler
-io.on("connnection", (socket) => {
+io.on("connection", (socket) => {
     const userId = socket.handshake.query.userId;
     console.log("User Connected", userId);
-
+    
     if (userId) userSocketMap[userId] = socket.id;
-
+    
     //Emit online users to all connected clients
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
-
-    socket.on("disconnected", () => {
+    
+    socket.on("disconnect", () => {
         console.log("User Disconnected", userId);
         delete userSocketMap[userId];
         io.emit("getOnlineUsers", Object.keys(userSocketMap))
@@ -45,7 +47,7 @@ app.use(cors());
 //Routes setup
 app.use("/api/status", (req, res) => res.send("Server is live"));
 app.use('/api/auth', userRouter);
-app.use('api/messages', messageRouter)
+app.use('/api/messages', messageRouter)
 
 await connectDB();
 

@@ -27,6 +27,7 @@ export const signup = async (req, res) => {
         const token = generateToken(newUser._id);
         res.json({ success: true, userData: newUser, token, message: "Accout created Successfully" });
     } catch (error) {
+        console.log("error hai", error);        
         res.json({ success: false, message: error.message });
 
     }
@@ -73,8 +74,11 @@ export const updateProfile = async (req, res) => {
 
             updatedUser = await User.findByIdAndUpdate(userId, { profilePic: upload.secure_url, bio, fullName }, { new: true });
             res.json({success:true, user:updatedUser});
+            console.log(updatedUser);
+            
         }
     } catch (error) {
+        console.log("this is",error);
         res.json({success:false, message:error.message});
     }
 }
